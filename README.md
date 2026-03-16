@@ -414,6 +414,7 @@ These metrics distinguish between:
 
 # Repository Structure
 
+```
 PredictiveAlerting/
 ├─ data/
 │  ├─ raw/
@@ -435,7 +436,7 @@ PredictiveAlerting/
 │  └─ plots.py                 # plotting utilities (PR curve, feature importance, threshold tradeoff)
 ├─ README.md                   # this document
 └─ requirements.txt            # Python dependencies
-
+```
 
 ## Design decisions
 - **Model choice:** a `HistGradientBoostingClassifier` was chosen as a strong, fast baseline for tabular sliding-window features. It requires minimal preprocessing, captures non-linear interactions, and trains efficiently thanks to histogram-based splits.  
