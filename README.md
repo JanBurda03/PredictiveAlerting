@@ -18,18 +18,14 @@ This repository implements a complete machine learning pipeline that:
 We observe a time series of a system metric:
 
 ```
-
 TimeStamp, Value
-
 ```
 
 Additionally, the dataset contains expert annotations indicating when incidents occur:
 
 ```
-
 Label = 1 → incident period
 Label = 0 → normal operation
-
 ```
 
 Instead of detecting incidents when they happen, the objective is to **predict whether an incident will occur soon**.
@@ -48,10 +44,8 @@ Where:
 Example configuration used in experiments:
 
 ```
-
 W = 90
 H = 30
-
 ```
 
 This means:
@@ -330,9 +324,7 @@ https://github.com/microsoft/cloud-monitoring-dataset
 Our pipeline was tested specifically on the metric:
 
 ```
-
 mongodb-machine-rps
-
 ```
 
 This metric represents the **number of MongoDB requests processed per second** on a server.  
