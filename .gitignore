@@ -1,0 +1,21 @@
+# Byte-compiled  cache
+__pycache__
+.py[cod]
+$py.class
+
+# Virtual environment
+venv
+.venv
+env
+ENV
+
+# Python build files
+build
+dist
+.egg-info
+
+# Jupyter
+.ipynb_checkpoints
+
+# Logs
+.log
