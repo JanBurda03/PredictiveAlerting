@@ -378,32 +378,6 @@ Generated feature columns:
 
 ---
 
-# Evaluation Metrics
-
-The evaluation focuses on **incident prediction performance**, not just classification accuracy.
-
-Output metrics:
-
-| Column                 | Meaning                              |
-| ---------------------- | ------------------------------------ |
-| threshold              | probability threshold                |
-| alert_precision        | valid_alerts / alerts_count          |
-| incident_recall        | detected_incidents / total_incidents |
-| avg_detection_distance | mean lead time before incident       |
-| detected_incidents     | incidents detected                   |
-| total_incidents        | total incidents                      |
-| alerts_count           | total alerts generated               |
-| valid_alerts           | true positive alerts                 |
-| invalid_alerts         | false positive alerts                |
-| false_alert_rate       | false alerts per non-incident step   |
-
-These metrics distinguish between:
-
-* **alert quality** (precision, false alerts)
-* **incident coverage** (recall, detection distance)
-
----
-
 # Repository Structure
 
 ```
