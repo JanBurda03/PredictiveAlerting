@@ -189,35 +189,6 @@ Gradient boosting models are a strong baseline for tabular datasets because they
 - capture nonlinear feature interactions
 - train efficiently thanks to histogram-based splitting
 
-## 3 Evaluate the Model
-
-Single threshold evaluation:
-
-```bash
-python src/evaluate.py \
-    --dataset data/processed/test.csv \
-    --model models/model.pkl \
-    --threshold 0.4 \
-    --save_dir results
-```
-
----
-
-## 4 Threshold Sweep (Recommended)
-
-```bash
-python src/evaluate.py \
-    --dataset data/processed/test.csv \
-    --model models/model.pkl \
-    --threshold_sweep \
-    --thresholds 0.05 0.95 19 \
-    --save_dir results
-```
-
-This evaluates the model across many thresholds and produces diagnostic plots.
-
----
-
 ## 3 Model Evaluation
 
 The evaluation script supports **two evaluation modes**:
