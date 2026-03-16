@@ -348,16 +348,13 @@ Each record contains:
 Where:
 
 ```
-
 0 = normal operation
 1 = incident period
-
 ```
 
 **Note:** In our feature extraction, **rows that already belong to an incident period are excluded** to ensure the model only predicts upcoming incidents.  
 
 ---
-```
 
 
 # Feature Engineering
@@ -434,30 +431,28 @@ PredictiveAlerting/
 ├─ src/
 │  ├─ feature_extraction.py    # sliding-window feature generation
 │  ├─ train_model.py           # model training
-│  ├─ evaluate.py              # incident-aware evaluation & threshold sweep
+│  ├─ evaluate.py              # valuation & threshold sweep
 │  └─ plots.py                 # plotting utilities (PR curve, feature importance, threshold tradeoff)
 ├─ README.md                   # this document
 └─ requirements.txt            # Python dependencies
 
 
 ## Design decisions
-- **Model choice:** a `HistGradientBoostingClassifier` was chosen as a strong, fast baseline for tabular sliding-window features — it requires minimal preprocessing, captures non-linear interactions, and trains efficiently thanks to histogram-based splits.  
-- **Feature design:** handcrafted rolling statistics (means, percentiles, diffs, slope, volatility, last value, etc.) were used to summarize W past steps into interpretable signals; this keeps the pipeline simple and explainable for SRE-style reviews.  
-- **Evaluation view:** we deliberately report *both* alert-level metrics (alert_precision, false_alert_rate, alerts_count) and incident-level metrics (incident_recall, avg_detection_distance). This reflects operational trade-offs between noise and utility that matter in production alerting.  
+- **Model choice:** a `HistGradientBoostingClassifier` was chosen as a strong, fast baseline for tabular sliding-window features. It requires minimal preprocessing, captures non-linear interactions, and trains efficiently thanks to histogram-based splits.  
+- **Feature design:** handcrafted rolling statistics (means, percentiles, diffs, slope, volatility, last value, etc.) were used to summarize W past steps into interpretable signals; this keeps the pipeline simple and explainable.  
+- **Evaluation view:** we report both alert-level metrics (alert_precision, false_alert_rate, alerts_count) and incident-level metrics (incident_recall, avg_detection_distance). This reflects operational trade-offs between noise and utility.  
 - **Preprocessing rule:** windows that end during an ongoing incident are dropped so the model learns *pre-incident* precursors rather than detecting already-ongoing incidents.
 
 ## Limitations
 - **Single-metric prototype:** experiments focus on one metric (`mongodb-machine-rps`); real services usually require multivariate signals and cross-metric context.  
-- **Label quality & sparsity:** labels are expert-annotated and may be coarse or imbalanced; a small number of incidents reduces statistical power for some analyses.  
+- **Number of incidents:** labels are imbalanced and a small number of incidents reduces generalization.
 - **Stationarity & concept drift:** service behavior can change over time; the offline model may degrade unless retrained or adapted.  
-- **Simplified alert logic:** current thresholding is global and static — production systems often need calibrated scores, adaptive thresholds, or cost-sensitive decision rules.  
-- **Approximate feature importance:** permutation importance is useful but expensive and can be noisy on correlated features.
+- **Simplified alert logic:** current thresholding is global and static — production systems often need calibrated scores, adaptive thresholds, etc.
+- **Approximate feature importance:** permutation importance is useful but can be noisy on correlated features.
 
-## Future work (practical next steps)
+## Practical next steps
 - **Multivariate features:** add additional metrics (latency, CPU, error rates) and cross-feature interactions to improve detection and reduce false positives.  
 - **Temporal models:** experiment with temporal architectures (TCN, lightweight Transformer, or 1D-CNN) that consume raw windows — compare lead-time and recall against the handcrafted baseline.  
 - **Online / scheduled retraining:** implement periodic retraining and model validation (e.g., weekly retrain Lambda job + S3 model artifacts) to handle drift.  
 - **Thresholding & calibration:** add score calibration (Platt/Isotonic) and cost-aware threshold selection (optimize weighted cost of misses vs false alerts).  
-- **Robust evaluation:** report per-incident lead-time distributions, confidence intervals, and perform ablation studies (remove feature groups) to justify features.  
-- **Operationalization:** add a lightweight inference service (container or Lambda), alert deduplication rules, and an experiment plan (A/B test or shadow mode) before enabling real alerts.  
 - **Synthetic augmentation:** use simulation or controlled perturbations to increase incident diversity and stress-test the model.
