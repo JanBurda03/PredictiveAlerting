@@ -128,8 +128,8 @@ if __name__ == "__main__":
                         help="Test dataset CSV (features + label).")
     parser.add_argument("--model", type=str, default="../models/model.pkl",
                         help="Path to trained model.")
-    parser.add_argument("--experiment", action="store_true",
-                        help="Run threshold sweep experiment")
+    parser.add_argument("--threshold_sweep", action="store_true",
+                        help="Run threshold sweep")
     parser.add_argument("--threshold", type=float, default=0.5,
                         help="Single threshold for evaluation")
     parser.add_argument("--thresholds", type=float, nargs=3,
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     os.makedirs(args.save_dir, exist_ok=True)
 
     # Evaluate either single threshold or sweep thresholds
-    if args.experiment:
+    if args.threshold_sweep:
         if args.thresholds:
             thresholds = np.linspace(*args.thresholds)
         else:
