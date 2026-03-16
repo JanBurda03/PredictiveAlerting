@@ -21,7 +21,6 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Train Gradient Boosting model.")
     parser.add_argument("--dataset", type=str, default="../data/processed/train.csv")
-    parser.add_argument("--save_model", action="store_true")
     parser.add_argument("--save_dir", type=str, default="../models")
 
     args = parser.parse_args()
@@ -40,7 +39,6 @@ if __name__ == "__main__":
     print("Training model...")
     model = train_model(X, y)
 
-    if args.save_model:
-        os.makedirs(args.save_dir, exist_ok=True)
-        joblib.dump(model, os.path.join(args.save_dir, "model.pkl"))
-        print(f"Model saved to {args.save_dir}")
+    os.makedirs(args.save_dir, exist_ok=True)
+    joblib.dump(model, os.path.join(args.save_dir, "model.pkl"))
+    print(f"Model saved to {args.save_dir}")
