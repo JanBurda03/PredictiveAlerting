@@ -131,7 +131,7 @@ python src/feature_extraction.py \
     --output_dir data/processed \
     --split \
     --test_size 0.5
-````
+```
 
 ### Parameters
 
@@ -160,10 +160,6 @@ If `--split` is not used, a single dataset file is generated:
 ```
 data/processed/dataset.csv
 ```
-
-```
-```
-
 
 ## 2 Train the Model
 
