@@ -44,14 +44,14 @@ Where:
 Example configuration used in experiments:
 
 ```
-W = 90
-H = 30
+W = 60
+H = 20
 ```
 
 This means:
 
-- the model observes the **last 90 measurements**
-- it predicts whether an incident will occur within the **next 30 steps**
+- the model observes the **last 60 measurements**
+- it predicts whether an incident will occur within the **next 20 steps**
 
 ---
 
@@ -120,8 +120,8 @@ Example command:
 ```bash
 python src/feature_extraction.py \
     --input_file data/raw/dataset.csv \
-    --W 90 \
-    --H 30 \
+    --W 60 \
+    --H 20 \
     --output_dir data/processed \
     --split \
     --test_size 0.5
@@ -197,7 +197,7 @@ Run evaluation with a fixed probability threshold:
 python src/evaluate.py \
     --dataset data/processed/test.csv \
     --model models/model.pkl \
-    --threshold 0.4 \
+    --threshold 0.5 \
     --save_dir results
 ```
 
@@ -252,25 +252,25 @@ Example output for a threshold sweep:
 ```text
 Experiment results:
     threshold  alert_precision  incident_recall  avg_detection_distance  detected_incidents  total_incidents  alerts_count  valid_alerts  invalid_alerts  false_alert_rate
-0        0.05         0.208666              0.7               65.857143                   7               10          1754           366            1388          0.150706
-1        0.10         0.282271              0.7               65.857143                   7               10          1286           363             923          0.100217
-2        0.15         0.350947              0.7               64.000000                   7               10          1003           352             651          0.070684
-3        0.20         0.434944              0.7               64.000000                   7               10           807           351             456          0.049511
-4        0.25         0.468657              0.7               60.714286                   7               10           670           314             356          0.038654
-5        0.30         0.480438              0.7               60.571429                   7               10           639           307             332          0.036048
-6        0.35         0.509182              0.7               58.000000                   7               10           599           305             294          0.031922
-7        0.40         0.521127              0.7               57.285714                   7               10           568           296             272          0.029533
-8        0.45         0.521818              0.7               56.571429                   7               10           550           287             263          0.028556
-9        0.50         0.502146              0.7               53.571429                   7               10           466           234             232          0.025190
-10       0.55         0.540603              0.7               53.571429                   7               10           431           233             198          0.021498
-11       0.60         0.563725              0.6               46.333333                   6               10           408           230             178          0.019327
-12       0.65         0.596354              0.6               46.333333                   6               10           384           229             155          0.016830
-13       0.70         0.591667              0.6               46.333333                   6               10           360           213             147          0.015961
-14       0.75         0.639394              0.5               51.200000                   5               10           330           211             119          0.012921
-15       0.80         0.721254              0.5               51.200000                   5               10           287           207              80          0.008686
-16       0.85         0.731343              0.5               51.200000                   5               10           268           196              72          0.007818
-17       0.90         0.541667              0.4               34.000000                   4               10           144            78              66          0.007166
-18       0.95         0.666667              0.2               33.000000                   2               10            84            56              28          0.003040
+0        0.05         0.176080         0.500000               19.333333                   6               12           602           106             496          0.051145
+1        0.10         0.252280         0.416667               20.000000                   5               12           329            83             246          0.025366
+2        0.15         0.303419         0.416667               17.800000                   5               12           234            71             163          0.016808
+3        0.20         0.382022         0.416667               16.600000                   5               12           178            68             110          0.011343
+4        0.25         0.410256         0.416667               13.800000                   5               12           156            64              92          0.009486
+5        0.30         0.450704         0.416667               13.800000                   5               12           142            64              78          0.008043
+6        0.35         0.448819         0.333333               16.500000                   4               12           127            57              70          0.007218
+7        0.40         0.530612         0.250000               19.000000                   3               12            98            52              46          0.004743
+8        0.45         0.434211         0.250000               12.666667                   3               12            76            33              43          0.004434
+9        0.50         0.433333         0.250000               12.666667                   3               12            60            26              34          0.003506
+10       0.55         0.347826         0.250000               10.333333                   3               12            46            16              30          0.003093
+11       0.60         0.357143         0.250000               10.333333                   3               12            42            15              27          0.002784
+12       0.65         0.375000         0.250000               10.333333                   3               12            40            15              25          0.002578
+13       0.70         0.250000         0.166667               12.500000                   2               12            32             8              24          0.002475
+14       0.75         0.200000         0.166667               12.500000                   2               12            30             6              24          0.002475
+15       0.80         0.178571         0.083333               20.000000                   1               12            28             5              23          0.002372
+16       0.85         0.200000         0.083333               20.000000                   1               12            25             5              20          0.002062
+17       0.90         0.200000         0.083333               20.000000                   1               12            25             5              20          0.002062
+18       0.95         0.000000         0.000000                     NaN                   0               12             0             0               0          0.000000
 ```
 
 ---
@@ -432,20 +432,18 @@ PredictiveAlerting/
 
 ## Design decisions
 - **Model choice:** a `HistGradientBoostingClassifier` was chosen as a strong, fast baseline for tabular sliding-window features. It requires minimal preprocessing, captures non-linear interactions, and trains efficiently thanks to histogram-based splits.  
-- **Feature design:** handcrafted rolling statistics (means, percentiles, diffs, slope, volatility, last value, etc.) were used to summarize W past steps into interpretable signals; this keeps the pipeline simple and explainable.  
+- **Feature design:** handcrafted rolling statistics (means, percentiles, diffs, slope, volatility, last value, etc.) were used to summarize W past steps into interpretable signals, which keeps the pipeline simple and explainable, no matter the window size.  
 - **Evaluation view:** we report both alert-level metrics (alert_precision, false_alert_rate, alerts_count) and incident-level metrics (incident_recall, avg_detection_distance). This reflects operational trade-offs between noise and utility.  
 - **Preprocessing rule:** windows that end during an ongoing incident are dropped so the model learns *pre-incident* precursors rather than detecting already-ongoing incidents.
 
 ## Limitations
-- **Single-metric prototype:** experiments focus on one metric (`mongodb-machine-rps`); real services usually require multivariate signals and cross-metric context.  
+- **Single-metric prototype:** experiments focus on one metric (`mongodb-machine-rps`), while real services usually require multivariate signals and cross-metric context.  
 - **Number of incidents:** labels are imbalanced and a small number of incidents reduces generalization.
-- **Stationarity & concept drift:** service behavior can change over time; the offline model may degrade unless retrained or adapted.  
-- **Simplified alert logic:** current thresholding is global and static — production systems often need calibrated scores, adaptive thresholds, etc.
+- **Stationarity & concept drift:** service behavior can change over time. The offline model may degrade unless retrained or adapted.  
+- **Simplified alert logic:** current thresholding is global and static. Calibrated scores, adaptive thresholds, etc. are often needed.
 - **Approximate feature importance:** permutation importance is useful but can be noisy on correlated features.
 
 ## Practical next steps
-- **Multivariate features:** add additional metrics (latency, CPU, error rates) and cross-feature interactions to improve detection and reduce false positives.  
-- **Temporal models:** experiment with temporal architectures (TCN, lightweight Transformer, or 1D-CNN) that consume raw windows — compare lead-time and recall against the handcrafted baseline.  
-- **Online / scheduled retraining:** implement periodic retraining and model validation (e.g., weekly retrain Lambda job + S3 model artifacts) to handle drift.  
-- **Thresholding & calibration:** add score calibration (Platt/Isotonic) and cost-aware threshold selection (optimize weighted cost of misses vs false alerts).  
-- **Synthetic augmentation:** use simulation or controlled perturbations to increase incident diversity and stress-test the model.
+- **Multivariate features:** use a dataset that adds additional metrics (latency, CPU, error rates) to improve detection and reduce false positives.  
+- **Temporal models:** experiment with other architectures (TCN, lightweight Transformer, or 1D-CNN) that consume raw windows and compare lead-time and recall against the handcrafted baseline.  
+- **Online retraining:** implement retraining and model validation to handle drift.  
