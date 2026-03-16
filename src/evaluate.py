@@ -74,7 +74,7 @@ def evaluate_model(model, X, y, threshold=0.5):
 
     # iterate over predictions to track TP, FP, and first alert per incident
     for i, pred in enumerate(y_pred):
-        # update current incident if past
+        # update current closest incident
         if current_incident is not None and i == current_incident:
             current_incident_idx += 1
             current_incident = incidents[current_incident_idx] if current_incident_idx < len(incidents) else None
