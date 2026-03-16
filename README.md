@@ -112,7 +112,6 @@ pip install -r requirements.txt
 
 # Running the Pipeline
 
-````markdown
 ## 1 Feature Extraction
 
 The first step converts the raw time-series dataset into **sliding-window feature vectors**.
