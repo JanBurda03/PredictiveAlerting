@@ -33,6 +33,12 @@ def find_incidents(labels):
     return incidents
 
 
+import numpy as np
+import pandas as pd
+
+import numpy as np
+import pandas as pd
+
 def evaluate_model(model, X, y, threshold=0.5):
     """
     Incident-based evaluation of model predictions.
@@ -42,9 +48,14 @@ def evaluate_model(model, X, y, threshold=0.5):
         - y_prob: predicted probabilities for PR analysis
 
     Metrics:
-        - precision: TP / (TP + FP)
-        - recall: detected incidents / total incidents
-        - avg_detection_distance: first alert distance per incident
+        - alert_precision: TP_alert / (TP_alert + FP_alert)
+        - incident_recall: detected_incidents / total_incidents
+        - avg_detection_distance: mean lead time per detected incident
+        - detected_incidents: number of detected incidents
+        - total_incidents: total number of incidents
+        - alerts_count: total number of alerts (TP + FP)
+        - valid_alerts: true positives
+        - invalid_alerts: false positives
         - false_alert_rate: FP / non-incident timesteps
     """
     # predict probabilities and binarize with threshold
@@ -63,7 +74,7 @@ def evaluate_model(model, X, y, threshold=0.5):
 
     # iterate over predictions to track TP, FP, and first alert per incident
     for i, pred in enumerate(y_pred):
-        # updating the closest incident if the current already happened
+        # update current incident if past
         if current_incident is not None and i == current_incident:
             current_incident_idx += 1
             current_incident = incidents[current_incident_idx] if current_incident_idx < len(incidents) else None
@@ -73,27 +84,35 @@ def evaluate_model(model, X, y, threshold=0.5):
                 false_positives += 1
             else:
                 true_positives += 1
-                # record first detection distance for this incident
                 if current_incident and incident_dict[current_incident] is None:
                     incident_dict[current_incident] = current_incident - i
 
     # aggregate metrics
+    total_incidents = len(incidents)
     detected_incidents = sum(1 for v in incident_dict.values() if v is not None)
     lead_times = [v for v in incident_dict.values() if v is not None]
     avg_distance = np.mean(lead_times) if lead_times else np.nan
 
-    precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
-    recall = detected_incidents / len(incidents) if incidents else 0
+    valid_alerts = true_positives
+    invalid_alerts = false_positives
+    alerts_count = valid_alerts + invalid_alerts
+
+    alert_precision = valid_alerts / alerts_count if alerts_count > 0 else 0
+    incident_recall = detected_incidents / total_incidents if total_incidents > 0 else 0
     non_incident_steps = (y == 0).sum()
-    false_alert_rate = false_positives / non_incident_steps if non_incident_steps > 0 else np.nan
+    false_alert_rate = invalid_alerts / non_incident_steps if non_incident_steps > 0 else np.nan
 
     # create results DataFrame
     results_df = pd.DataFrame([{
         "threshold": threshold,
-        "precision": precision,
-        "recall": recall,
+        "alert_precision": alert_precision,
+        "incident_recall": incident_recall,
         "avg_detection_distance": avg_distance,
         "detected_incidents": detected_incidents,
+        "total_incidents": total_incidents,
+        "alerts_count": alerts_count,
+        "valid_alerts": valid_alerts,
+        "invalid_alerts": invalid_alerts,
         "false_alert_rate": false_alert_rate
     }])
 

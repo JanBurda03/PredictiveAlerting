@@ -71,8 +71,8 @@ def plot_threshold_tradeoff(results, save_dir):
     Plot precision and recall as a function of threshold.
     """
     plt.figure()
-    plt.plot(results["threshold"], results["recall"], label="recall")
-    plt.plot(results["threshold"], results["precision"], label="precision")
+    plt.plot(results["threshold"], results["incident_recall"], label="indicent recall")
+    plt.plot(results["threshold"], results["alert_precision"], label="alert precision")
     plt.xlabel("Threshold")
     plt.ylabel("Score")
     plt.title("Threshold tradeoff")
