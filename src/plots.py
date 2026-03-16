@@ -22,7 +22,7 @@ def plot_precision_recall(y_true, y_prob, save_dir):
     plt.savefig(os.path.join(save_dir, "precision_recall_curve.png"))
     plt.close()
 
-def plot_feature_importance(model, X: pd.DataFrame, y, save_dir: str):
+def plot_feature_importance(model, X_df: pd.DataFrame, y, save_dir: str):
     """
     Compute and plot permutation feature importance.
 
@@ -39,7 +39,8 @@ def plot_feature_importance(model, X: pd.DataFrame, y, save_dir: str):
     """
         
     # Use DataFrame column names for plotting
-    feature_labels = X.columns
+    feature_labels = X_df.columns
+    X = X_df.values
 
     # Compute permutation importance
     result = permutation_importance(
